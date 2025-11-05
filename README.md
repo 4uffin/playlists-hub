@@ -1,6 +1,6 @@
 # playlists
 
-/
+```
 ├── index.html
 ├── style.css
 ├── script.js
@@ -8,3 +8,4 @@
     ├── chill_vibes.json
     ├── workout_beats.json
     └── study_focus.json
+```
