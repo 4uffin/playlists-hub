@@ -102,15 +102,47 @@ footer {
   cursor: pointer;
 }
 
-textarea {
-  width: 100%;
-  height: 250px;
-  font-family: monospace;
-  font-size: 0.9rem;
+#playlistForm label {
+  display: block;
   margin-top: 1rem;
+  font-weight: bold;
+}
+
+#playlistForm input,
+#playlistForm textarea {
+  width: 100%;
+  margin-top: 0.3rem;
   padding: 0.5rem;
   border-radius: 8px;
   border: 1px solid #ccc;
-  background: #f7f7f7;
-  resize: none;
+  font-family: monospace;
+  font-size: 0.9rem;
+}
+
+#playlistForm button {
+  margin-top: 1rem;
+  background: #6c63ff;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+#playlistForm button:hover {
+  background: #574fd6;
+}
+
+#copyBtn {
+  margin-top: 0.5rem;
+  background: #00b894;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+#copyBtn:hover {
+  background: #019f7a;
 }
