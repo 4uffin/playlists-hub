@@ -1,6 +1,6 @@
 // ==== CONFIGURATION ====
 const GITHUB_USERNAME = "4uffin"; // ← your GitHub username
-const REPO_NAME = "playlist-hub";        // ← your repo name
+const REPO_NAME = "playlists-hub";        // ← your repo name
 const BRANCH = "main";                   // or "master" if your repo uses that
 
 // GitHub API endpoint for listing playlist files
