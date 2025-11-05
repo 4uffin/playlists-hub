@@ -1,5 +1,5 @@
 // ==== CONFIGURATION ====
-const GITHUB_USERNAME = "YOUR_USERNAME"; // ← your GitHub username
+const GITHUB_USERNAME = "4uffin"; // ← your GitHub username
 const REPO_NAME = "playlist-hub";        // ← your repo name
 const BRANCH = "main";                   // or "master" if your repo uses that
 
