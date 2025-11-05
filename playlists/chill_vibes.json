@@ -1,0 +1,14 @@
+{
+  "name": "Chill Vibes",
+  "description": "Lo-fi and ambient tracks to relax or study with.",
+  "embeds": [
+    {
+      "title": "YouTube - Lofi Hip Hop Radio",
+      "iframe": "<iframe width='100%' height='200' src='https://www.youtube.com/embed/5qap5aO4i9A' allow='autoplay; encrypted-media' allowfullscreen></iframe>"
+    },
+    {
+      "title": "Spotify - Chill Hits",
+      "iframe": "<iframe style='border-radius:12px' src='https://open.spotify.com/embed/playlist/37i9dQZF1DX4WYpdgoIcn6?utm_source=generator' width='100%' height='200' allowfullscreen></iframe>"
+    }
+  ]
+}
