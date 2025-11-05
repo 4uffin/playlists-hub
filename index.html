@@ -10,9 +10,20 @@
   <header>
     <h1>🎵 GitHub Playlist Hub</h1>
     <p>Community-curated playlists with native embeds.</p>
+    <button id="addPlaylistBtn">➕ Add Your Playlist</button>
   </header>
 
   <main id="playlists"></main>
+
+  <!-- Modal -->
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <span id="closeModal">&times;</span>
+      <h2>📝 Contribute a Playlist</h2>
+      <p>Copy the JSON template below, then <a id="repoLink" href="#" target="_blank">create a new file</a> in <code>/playlists/</code> on GitHub.</p>
+      <textarea id="template" readonly></textarea>
+    </div>
+  </div>
 
   <footer>
     <p>Built with ❤️ by Connor & GitHub Pages</p>
