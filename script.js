@@ -74,12 +74,12 @@ copyBtn.onclick = () => {
   alert("✅ JSON copied to clipboard!");
 };
 
-// Sorting and filtering functions
+// Sorting and filtering
 function applySorting(playlistsArray) {
   if (settings.sortOrder === "alphabetical") {
-    playlistsArray.sort((a, b) => a.name.localeCompare(b.name));
+    playlistsArray.sort((a,b) => a.name.localeCompare(b.name));
   } else if (settings.sortOrder === "newest" && playlistsArray[0]?.date) {
-    playlistsArray.sort((a, b) => new Date(b.date) - new Date(a.date));
+    playlistsArray.sort((a,b) => new Date(b.date) - new Date(a.date));
   }
 }
 
@@ -98,7 +98,6 @@ function renderFilteredPlaylists() {
   scrollToPlaylistFromURL();
 }
 
-// Render playlists
 function renderPlaylists(playlistsArray) {
   container.innerHTML = "";
   if (!playlistsArray.length) {
@@ -129,7 +128,6 @@ function renderPlaylists(playlistsArray) {
   });
 }
 
-// Scroll to playlist from URL
 function scrollToPlaylistFromURL() {
   const params = new URLSearchParams(window.location.search);
   const playlistName = params.get("playlist");
@@ -148,7 +146,7 @@ function scrollToPlaylistFromURL() {
   }
 }
 
-// Event listeners for search and sorting
+// Event listeners
 searchInput.addEventListener("input", () => {
   settings.lastSearch = searchInput.value;
   localStorage.setItem("playlistHubSettings", JSON.stringify(settings));
@@ -161,7 +159,7 @@ sortSelect.addEventListener("change", () => {
   renderFilteredPlaylists();
 });
 
-// Fetch playlists from GitHub
+// Fetch playlists
 async function loadPlaylists() {
   container.innerHTML = "<p>Loading playlists...</p>";
   try {
