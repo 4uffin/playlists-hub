@@ -16,7 +16,8 @@ header {
 }
 
 h1 {
-  margin: 0.3rem 0;
+  margin-top: 0;
+  margin-bottom: 0.3rem;
 }
 
 button {
@@ -32,6 +33,38 @@ button {
 
 button:hover {
   background: #ece9ff;
+}
+
+#searchContainer {
+  margin: 1rem 0;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+#searchInput {
+  width: 90%;
+  max-width: 400px;
+  padding: 0.5rem 1rem;
+  border-radius: 12px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  outline: none;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+#searchInput:focus {
+  border-color: #6c63ff;
+  box-shadow: 0 0 8px rgba(108, 99, 255, 0.5);
+}
+
+#sortSelect {
+  padding: 0.5rem 1rem;
+  border-radius: 12px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  outline: none;
 }
 
 main {
@@ -63,6 +96,21 @@ main {
 iframe {
   border: none;
   border-radius: 8px;
+}
+
+.copy-url-btn {
+  margin-top: 1rem;
+  background: #3498db;
+  color: white;
+  border: none;
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.copy-url-btn:hover {
+  background: #217dbb;
 }
 
 footer {
