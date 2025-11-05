@@ -20,8 +20,26 @@
     <div class="modal-content">
       <span id="closeModal">&times;</span>
       <h2>📝 Contribute a Playlist</h2>
-      <p>Copy the JSON template below, then <a id="repoLink" href="#" target="_blank">create a new file</a> in <code>/playlists/</code> on GitHub.</p>
+      
+      <form id="playlistForm">
+        <label>Playlist Name</label>
+        <input type="text" id="playlistName" placeholder="My Awesome Playlist" required />
+
+        <label>Description</label>
+        <textarea id="playlistDesc" placeholder="Describe your playlist..." required></textarea>
+
+        <label>Embeds (one per line, full iframe code)</label>
+        <textarea id="playlistEmbeds" placeholder="<iframe ...></iframe>" required></textarea>
+
+        <button type="submit">Generate JSON</button>
+      </form>
+
+      <h3>JSON Preview</h3>
       <textarea id="template" readonly></textarea>
+      <button id="copyBtn">📋 Copy JSON</button>
+      <p>
+        Then <a id="repoLink" href="#" target="_blank">create a new file</a> in <code>/playlists/</code> on GitHub.
+      </p>
     </div>
   </div>
 
