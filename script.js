@@ -1,9 +1,7 @@
-// ==== CONFIGURATION ====
-const GITHUB_USERNAME = "4uffin"; // ← your GitHub username
-const REPO_NAME = "playlists-hub";        // ← your repo name
-const BRANCH = "main";                   // or "master" if your repo uses that
+const GITHUB_USERNAME = "4uffin";
+const REPO_NAME = "playlists-hub";
+const BRANCH = "main";
 
-// GitHub API endpoint for listing playlist files
 const API_URL = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/playlists?ref=${BRANCH}`;
 
 async function loadPlaylists() {
