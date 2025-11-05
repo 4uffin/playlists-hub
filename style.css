@@ -76,12 +76,12 @@ main {
 }
 
 .playlist {
-  background: white;
-  border-radius: 14px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  max-width: 600px;
   width: 100%;
+  max-width: 600px;
   padding: 1.5rem;
+  border-radius: 14px;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   text-align: left;
 }
 
@@ -91,9 +91,17 @@ main {
 
 .embed {
   margin-top: 1rem;
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%; /* 16:9 aspect ratio */
 }
 
-iframe {
+.embed iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   border: none;
   border-radius: 8px;
 }
@@ -193,4 +201,31 @@ footer {
 
 #copyBtn:hover {
   background: #019f7a;
+}
+
+/* Responsive adjustments */
+@media screen and (min-width: 768px) {
+  main {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .playlist {
+    flex: 1 1 300px;
+    margin: 0.5rem;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .modal-content {
+    padding: 1rem;
+  }
+  #playlistForm input,
+  #playlistForm textarea {
+    font-size: 0.85rem;
+  }
+  button {
+    font-size: 0.9rem;
+    padding: 0.4rem 0.8rem;
+  }
 }
