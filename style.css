@@ -19,6 +19,21 @@ h1 {
   margin: 0.3rem 0;
 }
 
+button {
+  background: white;
+  color: #6c63ff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+button:hover {
+  background: #ece9ff;
+}
+
 main {
   display: flex;
   flex-direction: column;
@@ -55,4 +70,47 @@ footer {
   font-size: 0.9rem;
   color: #777;
   padding: 1rem;
+}
+
+/* Modal Styling */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 100;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+  background-color: white;
+  margin: 5% auto;
+  padding: 2rem;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 600px;
+  text-align: left;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+#closeModal {
+  float: right;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+textarea {
+  width: 100%;
+  height: 250px;
+  font-family: monospace;
+  font-size: 0.9rem;
+  margin-top: 1rem;
+  padding: 0.5rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background: #f7f7f7;
+  resize: none;
 }
