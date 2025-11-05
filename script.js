@@ -1,23 +1,82 @@
-const GITHUB_USERNAME = "4uffin";
+// Configuration
+const GITHUB_USERNAME = "4uffin";  // Replace with your username
 const REPO_NAME = "playlists-hub";
 const BRANCH = "main";
-
 const API_URL = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/playlists?ref=${BRANCH}`;
 
+// Elements
+const container = document.getElementById("playlists");
+
+const addBtn = document.getElementById("addPlaylistBtn");
+const modal = document.getElementById("modal");
+const closeModal = document.getElementById("closeModal");
+
+const playlistForm = document.getElementById("playlistForm");
+const nameInput = document.getElementById("playlistName");
+const descInput = document.getElementById("playlistDesc");
+const embedsInput = document.getElementById("playlistEmbeds");
+const template = document.getElementById("template");
+const copyBtn = document.getElementById("copyBtn");
+const repoLink = document.getElementById("repoLink");
+
+// Modal open/close
+addBtn.onclick = () => modal.style.display = "block";
+closeModal.onclick = () => modal.style.display = "none";
+window.onclick = e => { if (e.target === modal) modal.style.display = "none"; }
+
+// Update GitHub link dynamically
+function updateRepoLink() {
+  const safeName = nameInput.value
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, "_")
+    .replace(/[^\w_]/g, "");
+
+  repoLink.href = `https://github.com/${GITHUB_USERNAME}/${REPO_NAME}/new/${BRANCH}/playlists?filename=playlists/${safeName}.json`;
+}
+nameInput.addEventListener("input", updateRepoLink);
+
+// Generate JSON dynamically
+playlistForm.addEventListener("submit", e => {
+  e.preventDefault();
+  const embedsArray = embedsInput.value
+    .split("\n")
+    .filter(line => line.trim() !== "")
+    .map((iframe, index) => ({ title: `Embed ${index+1}`, iframe }));
+
+  const playlistJSON = {
+    name: nameInput.value.trim(),
+    description: descInput.value.trim(),
+    embeds: embedsArray
+  };
+
+  template.value = JSON.stringify(playlistJSON, null, 2);
+  updateRepoLink();
+});
+
+// Copy JSON
+copyBtn.onclick = () => {
+  template.select();
+  template.setSelectionRange(0, 99999);
+  document.execCommand("copy");
+  alert("✅ JSON copied to clipboard!");
+};
+
+// Load playlists from GitHub
 async function loadPlaylists() {
-  const container = document.getElementById("playlists");
   container.innerHTML = "<p>Loading playlists...</p>";
 
   try {
-    // Get playlist file list from GitHub
     const response = await fetch(API_URL);
+    if (!response.ok) throw new Error(`GitHub API returned ${response.status}`);
     const files = await response.json();
 
-    // Filter only JSON files
-    const jsonFiles = files.filter(file => file.name.endsWith(".json"));
+    if (!Array.isArray(files)) throw new Error("Unexpected API response");
+
+    const jsonFiles = files.filter(f => f.name.endsWith(".json"));
 
     if (!jsonFiles.length) {
-      container.innerHTML = "<p>No playlists found yet. Be the first to add one!</p>";
+      container.innerHTML = "<p>No playlists found yet. Add one to /playlists!</p>";
       return;
     }
 
@@ -25,11 +84,9 @@ async function loadPlaylists() {
 
     for (const file of jsonFiles) {
       try {
-        // Fetch raw JSON content
-        const rawResponse = await fetch(file.download_url);
-        const playlist = await rawResponse.json();
+        const res = await fetch(file.download_url);
+        const playlist = await res.json();
 
-        // Render playlist
         const div = document.createElement("div");
         div.className = "playlist";
         div.innerHTML = `
@@ -51,45 +108,11 @@ async function loadPlaylists() {
         console.error(`Error loading ${file.name}:`, err);
       }
     }
-  } catch (error) {
-    console.error("Error fetching playlist list:", error);
-    container.innerHTML = `<p style="color:red">Failed to load playlists. Check console for details.</p>`;
+  } catch (err) {
+    console.error("Error fetching playlists:", err);
+    container.innerHTML = "<p style='color:red'>Failed to load playlists. Check console.</p>";
   }
 }
 
-// ==== MODAL LOGIC ====
-const addBtn = document.getElementById("addPlaylistBtn");
-const modal = document.getElementById("modal");
-const closeModal = document.getElementById("closeModal");
-const template = document.getElementById("template");
-const repoLink = document.getElementById("repoLink");
-
-const REPO_URL = `https://github.com/${GITHUB_USERNAME}/${REPO_NAME}`;
-
-template.value = `{
-  "name": "My Awesome Playlist",
-  "description": "Describe your playlist here!",
-  "embeds": [
-    {
-      "title": "YouTube Example",
-      "iframe": "<iframe width='100%' height='200' src='https://www.youtube.com/embed/VIDEO_ID' allow='autoplay; encrypted-media' allowfullscreen></iframe>"
-    },
-    {
-      "title": "Spotify Example",
-      "iframe": "<iframe style='border-radius:12px' src='https://open.spotify.com/embed/playlist/PLAYLIST_ID' width='100%' height='200' allowfullscreen></iframe>"
-    }
-  ]
-}`;
-
-addBtn.onclick = () => {
-  repoLink.href = `${REPO_URL}/new/${BRANCH}/playlists?filename=playlists/your_playlist_name.json`;
-  modal.style.display = "block";
-};
-
-closeModal.onclick = () => (modal.style.display = "none");
-window.onclick = e => {
-  if (e.target === modal) modal.style.display = "none";
-};
-
-// ==== RUN ====
+// Run
 loadPlaylists();
