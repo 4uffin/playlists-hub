@@ -1,193 +1,128 @@
-// Configuration
-const GITHUB_USERNAME = "4uffin";
-const REPO_NAME = "playlists-hub";
-const BRANCH = "main";
-const API_URL = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/playlists?ref=${BRANCH}`;
-
-// Elements
-const container = document.getElementById("playlists");
-const addBtn = document.getElementById("addPlaylistBtn");
+const container = document.getElementById("playlistContainer");
+const addPlaylistBtn = document.getElementById("addPlaylistBtn");
 const modal = document.getElementById("modal");
-const closeModal = document.getElementById("closeModal");
-
+const closeBtn = document.querySelector(".close");
 const playlistForm = document.getElementById("playlistForm");
-const nameInput = document.getElementById("playlistName");
-const descInput = document.getElementById("playlistDesc");
-const embedsInput = document.getElementById("playlistEmbeds");
 const template = document.getElementById("template");
-const copyBtn = document.getElementById("copyBtn");
-const repoLink = document.getElementById("repoLink");
-
-const searchInput = document.getElementById("searchInput");
 const sortSelect = document.getElementById("sortSelect");
 
-let allPlaylists = [];
+const usernameInput = document.getElementById("username");
+const userPreview = document.getElementById("userPreview");
 
-// Load settings from localStorage
-let settings = JSON.parse(localStorage.getItem("playlistHubSettings")) || {
-  sortOrder: "alphabetical",
-  lastSearch: ""
-};
-sortSelect.value = settings.sortOrder;
-searchInput.value = settings.lastSearch;
+let userInfo = { username: "", profile_url: "", avatar_url: "" };
 
-// Modal open/close
-addBtn.onclick = () => modal.style.display = "block";
-closeModal.onclick = () => modal.style.display = "none";
-window.onclick = e => { if(e.target === modal) modal.style.display = "none"; }
+// Load playlists
+async function loadPlaylists() {
+  try {
+    const res = await fetch("https://api.github.com/repos/4uffin/playlists-hub/contents/playlists");
+    const files = await res.json();
 
-// Update GitHub link dynamically
-function updateRepoLink() {
-  const safeName = nameInput.value
-    .trim()
-    .toLowerCase()
-    .replace(/\s+/g, "_")
-    .replace(/[^\w_]/g, "");
-  repoLink.href = `https://github.com/${GITHUB_USERNAME}/${REPO_NAME}/new/${BRANCH}/playlists?filename=playlists/${safeName}.json`;
-}
-nameInput.addEventListener("input", updateRepoLink);
+    const playlists = await Promise.all(
+      files.filter(f => f.name.endsWith(".json")).map(async file => {
+        const data = await fetch(file.download_url);
+        return await data.json();
+      })
+    );
 
-// Generate JSON dynamically
-playlistForm.addEventListener("submit", e => {
-  e.preventDefault();
-  const embedsArray = embedsInput.value
-    .split("\n")
-    .filter(line => line.trim() !== "")
-    .map((iframe, index) => ({ title: `Embed ${index+1}`, iframe }));
+    const sortType = localStorage.getItem("playlistSort") || "recent";
+    sortSelect.value = sortType;
 
-  const playlistJSON = {
-    name: nameInput.value.trim(),
-    description: descInput.value.trim(),
-    embeds: embedsArray,
-    date: new Date().toISOString()
-  };
+    if (sortType === "name") {
+      playlists.sort((a, b) => a.name.localeCompare(b.name));
+    } else {
+      playlists.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+    }
 
-  template.value = JSON.stringify(playlistJSON, null, 2);
-  updateRepoLink();
-});
-
-// Copy JSON
-copyBtn.onclick = () => {
-  template.select();
-  template.setSelectionRange(0, 99999);
-  document.execCommand("copy");
-  alert("✅ JSON copied to clipboard!");
-};
-
-// Sorting and filtering
-function applySorting(playlistsArray) {
-  if (settings.sortOrder === "alphabetical") {
-    playlistsArray.sort((a,b) => a.name.localeCompare(b.name));
-  } else if (settings.sortOrder === "newest" && playlistsArray[0]?.date) {
-    playlistsArray.sort((a,b) => new Date(b.date) - new Date(a.date));
+    renderPlaylists(playlists);
+  } catch (err) {
+    console.error("Error fetching playlists:", err);
   }
 }
 
-function applySearch(playlistsArray) {
-  const query = searchInput.value.toLowerCase().trim();
-  return playlistsArray.filter(p =>
-    p.name.toLowerCase().includes(query) ||
-    p.description.toLowerCase().includes(query)
-  );
-}
-
-function renderFilteredPlaylists() {
-  let filtered = applySearch(allPlaylists);
-  applySorting(filtered);
-  renderPlaylists(filtered);
-  scrollToPlaylistFromURL();
-}
-
-function renderPlaylists(playlistsArray) {
+function renderPlaylists(playlists) {
   container.innerHTML = "";
-  if (!playlistsArray.length) {
-    container.innerHTML = "<p>No playlists match your search.</p>";
-    return;
-  }
-
-  playlistsArray.forEach(playlist => {
+  playlists.forEach(p => {
     const div = document.createElement("div");
     div.className = "playlist";
-
-    const playlistURL = `${window.location.origin}${window.location.pathname}?playlist=${encodeURIComponent(playlist.name)}`;
-
     div.innerHTML = `
-      <h2>${playlist.name}</h2>
-      <p>${playlist.description}</p>
-      ${playlist.embeds.map(e => `<div class="embed"><h4>${e.title}</h4>${e.iframe}</div>`).join('')}
-      <button class="copy-url-btn">📋 Copy Playlist URL</button>
+      <h3>${p.name}</h3>
+      <p>${p.description}</p>
+      <div class="embed">
+        ${p.embeds.map(e => e.iframe).join("")}
+      </div>
+      ${p.user ? `
+        <div class="user-info">
+          <img src="${p.user.avatar_url || ''}" alt="${p.user.username}" />
+          <a href="${p.user.profile_url}" target="_blank">@${p.user.username}</a>
+        </div>` : ""}
     `;
-
-    div.querySelector(".copy-url-btn").addEventListener("click", () => {
-      navigator.clipboard.writeText(playlistURL).then(() => {
-        alert(`✅ Playlist URL copied!\n${playlistURL}`);
-      }).catch(err => console.error("Failed to copy URL:", err));
-    });
-
     container.appendChild(div);
   });
 }
 
-function scrollToPlaylistFromURL() {
-  const params = new URLSearchParams(window.location.search);
-  const playlistName = params.get("playlist");
-  if (!playlistName) return;
-
-  const encodedName = decodeURIComponent(playlistName);
-  const playlistCards = document.querySelectorAll(".playlist");
-  for (const card of playlistCards) {
-    const title = card.querySelector("h2").textContent;
-    if (title === encodedName) {
-      card.scrollIntoView({ behavior: "smooth", block: "start" });
-      card.style.boxShadow = "0 0 20px rgba(108, 99, 255, 0.7)";
-      setTimeout(() => card.style.boxShadow = "0 2px 8px rgba(0,0,0,0.1)", 3000);
-      break;
-    }
-  }
-}
-
-// Event listeners
-searchInput.addEventListener("input", () => {
-  settings.lastSearch = searchInput.value;
-  localStorage.setItem("playlistHubSettings", JSON.stringify(settings));
-  renderFilteredPlaylists();
-});
-
 sortSelect.addEventListener("change", () => {
-  settings.sortOrder = sortSelect.value;
-  localStorage.setItem("playlistHubSettings", JSON.stringify(settings));
-  renderFilteredPlaylists();
+  localStorage.setItem("playlistSort", sortSelect.value);
+  loadPlaylists();
 });
 
-// Fetch playlists
-async function loadPlaylists() {
-  container.innerHTML = "<p>Loading playlists...</p>";
-  try {
-    const response = await fetch(API_URL);
-    if (!response.ok) throw new Error(`GitHub API returned ${response.status}`);
-    const files = await response.json();
-    if (!Array.isArray(files)) throw new Error("Unexpected API response");
+// Modal logic
+addPlaylistBtn.onclick = () => modal.style.display = "block";
+closeBtn.onclick = () => modal.style.display = "none";
+window.onclick = e => { if (e.target === modal) modal.style.display = "none"; };
 
-    const jsonFiles = files.filter(f => f.name.endsWith(".json"));
-    allPlaylists = [];
-
-    for (const file of jsonFiles) {
-      try {
-        const res = await fetch(file.download_url);
-        const playlist = await res.json();
-        allPlaylists.push(playlist);
-      } catch (err) {
-        console.error(`Error loading ${file.name}:`, err);
-      }
-    }
-
-    renderFilteredPlaylists();
-  } catch (err) {
-    console.error("Error fetching playlists:", err);
-    container.innerHTML = "<p style='color:red'>Failed to load playlists. Check console.</p>";
+// GitHub user preview
+usernameInput.addEventListener("input", async e => {
+  const username = e.target.value.trim();
+  if (!username) {
+    userPreview.innerHTML = "<p>Type your GitHub username to preview your profile</p>";
+    userInfo = { username: "", profile_url: "", avatar_url: "" };
+    return;
   }
-}
 
-// Initialize
+  userPreview.innerHTML = "<p>Loading...</p>";
+  try {
+    const res = await fetch(`https://api.github.com/users/${username}`);
+    if (!res.ok) throw new Error("User not found");
+    const data = await res.json();
+
+    userInfo = {
+      username: data.login,
+      profile_url: data.html_url,
+      avatar_url: data.avatar_url
+    };
+
+    userPreview.innerHTML = `
+      <img src="${data.avatar_url}" alt="${data.login}" />
+      <a href="${data.html_url}" target="_blank">@${data.login}</a>
+    `;
+  } catch {
+    userPreview.innerHTML = `<p style="color:red;">User not found or API limit reached</p>`;
+    userInfo = { username, profile_url: "", avatar_url: "" };
+  }
+});
+
+// Form submission
+playlistForm.addEventListener("submit", e => {
+  e.preventDefault();
+
+  const embedsArray = document.getElementById("embeds").value
+    .split("\n")
+    .filter(line => line.trim() !== "")
+    .map((iframe, i) => ({ title: `Embed ${i+1}`, iframe }));
+
+  const playlistJSON = {
+    name: document.getElementById("name").value.trim(),
+    description: document.getElementById("description").value.trim(),
+    embeds: embedsArray,
+    user: {
+      username: userInfo.username || "unknown",
+      profile_url: userInfo.profile_url || "",
+      avatar_url: userInfo.avatar_url || ""
+    },
+    date: new Date().toISOString()
+  };
+
+  template.value = JSON.stringify(playlistJSON, null, 2);
+});
+ 
 loadPlaylists();
-updateRepoLink();
