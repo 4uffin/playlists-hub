@@ -3,57 +3,54 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>GitHub Playlist Hub 🎧</title>
+  <title>Playlist Hub</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <header>
-    <h1>🎵 GitHub Playlist Hub</h1>
-    <p>Community-curated playlists with native embeds.</p>
-    <button id="addPlaylistBtn">➕ Add Your Playlist</button>
+    <h1>🎵 Playlist Hub</h1>
+    <div class="controls">
+      <button id="addPlaylistBtn">+ Add Playlist</button>
+      <select id="sortSelect">
+        <option value="recent">Sort: Most Recent</option>
+        <option value="name">Sort: Name (A–Z)</option>
+      </select>
+    </div>
   </header>
 
-  <div id="searchContainer">
-    <input type="text" id="searchInput" placeholder="🔍 Search playlists by name or description..." />
-    <select id="sortSelect">
-      <option value="alphabetical">Sort: Alphabetical</option>
-      <option value="newest">Sort: Newest First</option>
-    </select>
-  </div>
-
-  <main id="playlists"></main>
+  <main id="playlistContainer"></main>
 
   <!-- Modal -->
   <div id="modal" class="modal">
     <div class="modal-content">
-      <span id="closeModal">&times;</span>
-      <h2>📝 Contribute a Playlist</h2>
-      
+      <span class="close">&times;</span>
+      <h2>Add New Playlist</h2>
       <form id="playlistForm">
-        <label>Playlist Name</label>
-        <input type="text" id="playlistName" placeholder="My Awesome Playlist" required />
+        <label for="name">Playlist Name</label>
+        <input type="text" id="name" placeholder="Enter playlist name" required />
 
-        <label>Description</label>
-        <textarea id="playlistDesc" placeholder="Describe your playlist..." required></textarea>
+        <label for="description">Description</label>
+        <textarea id="description" placeholder="Short description" required></textarea>
 
-        <label>Embeds (one per line, full iframe code)</label>
-        <textarea id="playlistEmbeds" placeholder="<iframe ...></iframe>" required></textarea>
+        <label for="username">GitHub Username</label>
+        <input type="text" id="username" placeholder="e.g. 4uffin" />
+        <div id="userPreview" class="user-preview">
+          <p>Type your GitHub username to preview your profile</p>
+        </div>
+
+        <label for="embeds">Playlist Embeds (one per line)</label>
+        <textarea id="embeds" placeholder="Paste your embed iframe(s)" required></textarea>
 
         <button type="submit">Generate JSON</button>
       </form>
 
-      <h3>JSON Preview</h3>
-      <textarea id="template" readonly></textarea>
-      <button id="copyBtn">📋 Copy JSON</button>
-      <p>
-        Then <a id="repoLink" href="#" target="_blank">create a new file</a> in <code>/playlists/</code> on GitHub.
-      </p>
+      <div class="output">
+        <h3>Generated Playlist JSON</h3>
+        <textarea id="template" readonly></textarea>
+        <p>Commit this file to your <code>/playlists</code> folder.</p>
+      </div>
     </div>
   </div>
-
-  <footer>
-    <p>Built with ❤️ by Connor & GitHub Pages</p>
-  </footer>
 
   <script src="script.js"></script>
 </body>
